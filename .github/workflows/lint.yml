@@ -18,5 +18,6 @@ jobs:
       - name: Run linter and comment PR
         uses: matias-martini/flake8-pr-comments-action@main
         with:
+          checkName: 'flake8-lint'
           github_token: ${{ github.token }}
           plugins: "flake8-functions"
