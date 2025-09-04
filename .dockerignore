@@ -1,0 +1,32 @@
+# Docker-specific files
+Dockerfile
+.dockerignore
+
+# Git files
+.git
+.gitignore
+
+# Python virtual environment
+venv
+env
+*.venv
+
+# Python cache and compiled files
+pycache/
+*.pyc
+*.pyo
+*.pyd
+
+# Instance folder (for Flask)
+instance/
+
+# IDE and editor directories
+.vscode/
+.idea/
+
+# Testing files
+.pytest_cache/
+tests
+
+# Flake
+.flake8
