@@ -3,7 +3,7 @@ name: Linter
 on: [pull_request]
 
 jobs:
-  flake8-lint:
+  Lint:
     permissions:
       pull-requests: write
     runs-on: ubuntu-latest
@@ -21,26 +21,7 @@ jobs:
           github_token: ${{ github.token }}
           plugins: "flake8-functions"
       - name: Lint Dockerfile with Hadolint
-        id: hadolint
         uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: ./Dockerfile # Specify the path to your Dockerfile
           failure-threshold: warning
-      - name: Update Pull Request
-        uses: actions/github-script@v6
-        if: ${{ github.event_name == 'pull_request' && steps.hadolint.outcome == 'failure' }}
-        with:
-          script: |
-            const output = `
-            #### Hadolint: \`${{ steps.hadolint.outcome }}\`
-            \`\`\`
-            ${process.env.HADOLINT_RESULTS}
-            \`\`\`
-            `;
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            })
