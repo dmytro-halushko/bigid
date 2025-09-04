@@ -4,8 +4,6 @@ on: [pull_request]
 
 jobs:
   flake8-lint:
-    permissions:
-      pull-requests: write
     runs-on: ubuntu-latest
     name: Linter
     steps:
@@ -15,9 +13,15 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: "3.12"
-      - name: Run linter and comment PR
-        uses: matias-martini/flake8-pr-comments-action@main
-        with:
-          checkName: 'flake8-lint'
-          github_token: ${{ github.token }}
-          plugins: "flake8-functions"
+      - name: Setup flake8 annotations
+        uses: rbialon/flake8-annotations@v1
+      - name: Lint with flake8
+        run: |
+          pip install flake8
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+          
+
+
