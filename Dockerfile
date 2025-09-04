@@ -13,7 +13,7 @@ WORKDIR /home/app
 COPY --from=builder /opt/venv /opt/venv
 COPY app.py .
 RUN chown -R app:app /home/app
-ENV PATH="/opt/venv/bin:$PATH"
+NV PATH="/opt/venv/bin:$PATH"
 
 # Set the default readiness time
 ENV READINESS_TIME=30
