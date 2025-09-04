@@ -19,3 +19,4 @@ jobs:
         uses: matias-martini/flake8-pr-comments-action@main
         with:
           github_token: ${{ github.token }}
+          plugins: "flake8-functions"
