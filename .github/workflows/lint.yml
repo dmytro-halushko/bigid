@@ -1,4 +1,4 @@
-name: comment_pr_with_linter_error
+name: Linter
 
 on: [pull_request]
 
@@ -14,10 +14,9 @@ jobs:
       - name: Set up Python environment
         uses: actions/setup-python@v4
         with:
-          python-version: "3.11"
+          python-version: "3.12"
       - name: Run linter and comment PR
         uses: matias-martini/flake8-pr-comments-action@main
         with:
           github_token: ${{ github.token }}
-          cfg_path: "src/.flake8"
-          plugins: "pep8-naming flake8-functions"
+          plugins: "flake8-functions"
