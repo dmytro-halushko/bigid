@@ -23,5 +23,5 @@ jobs:
       - name: Lint Dockerfile with Hadolint
         uses: hadolint/hadolint-action@v3.1.0
         with:
-          dockerfile: ./Dockerfile # Specify the path to your Dockerfile
+          dockerfile: ./Dockerfile
           failure-threshold: warning
