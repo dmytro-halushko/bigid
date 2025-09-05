@@ -16,8 +16,6 @@ env:
 
 jobs:
   lint_and_test:
-    permissions:
-      pull-requests: write
     runs-on: ubuntu-latest
     name: lint_and_test
     steps:
