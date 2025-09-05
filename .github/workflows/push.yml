@@ -16,10 +16,11 @@ jobs:
     secrets:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
 
-
   build_push:
+    needs: lint_and_test
     name: Build, Push, Deploy
     runs-on: ubuntu-latest
+    steps:
       # Log in to Docker Hub using stored secrets
       - name: Check out source repository
         uses: actions/checkout@v3
