@@ -30,7 +30,7 @@ def test_get_ip_with_x_forwarded_for(client):
 def test_health_check(client):
     with patch('time.time', return_value=start_time + readiness_time - 0.1):
         response_not_ready = client.get('/health')
-        assert response_not_ready.status_code == 200
+        assert response_not_ready.status_code == 300
         assert response_not_ready.is_json
         assert response_not_ready.get_json() == {'status': 'not_ready'}
 
