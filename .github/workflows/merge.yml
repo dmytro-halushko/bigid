@@ -1,0 +1,36 @@
+name: Merge
+
+on:
+  push:
+    branches: [ "master" ]
+
+env:
+  IMAGE_NAME: "${{ secrets.DOCKERHUB_USERNAME }}/bigid-dmyh"
+
+jobs:
+  push-to-hub:
+    # This job will only run after Lint_and_Test has successfully completed
+    needs: Lint_and_Test
+    runs-on: ubuntu-latest
+    steps:
+      # Download the image artifact from the previous job
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-image
+          path: /tmp
+
+      # Load the image from the tar file into the local Docker daemon
+      - name: Load image
+        run: docker load --input /tmp/app-image.tar
+
+      # Log in to Docker Hub using stored secrets
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Push the loaded image to Docker Hub
+      - name: Push to Docker Hub
+        run: docker push ${{ env.IMAGE_NAME }}:${{ github.sha }}

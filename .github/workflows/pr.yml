@@ -1,9 +1,12 @@
-name: Linter
+name: PR
 
 on: [pull_request]
 
+env:
+  IMAGE_NAME: "${{ secrets.DOCKERHUB_USERNAME }}/bigid-dmyh"
+
 jobs:
-  Lint:
+  Lint_and_Test:
     permissions:
       pull-requests: write
     runs-on: ubuntu-latest
@@ -32,11 +35,19 @@ jobs:
       - name: Run tests with pytest
         run: pytest
       - name: Build an image from Dockerfile
-        run: docker build -t app:${{ github.sha }} .
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          # Do not push to registry in this step
+          push: false
+          # Define the image tag
+          tags: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          # Export the image as a tar file
+          outputs: type=docker,dest=/tmp/app-image.tar
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: 'app:${{ github.sha }}'
+          image-ref: '${{ env.IMAGE_NAME }}:${{ github.sha }}'
           format: 'table'
           exit-code: '1'
           ignore-unfixed: false
@@ -44,3 +55,10 @@ jobs:
           vuln-type: 'os,library'
           #severity: 'MEDIUM,CRITICAL,HIGH'
           severity: 'CRITICAL,HIGH'
+      # Upload the tar file as a workflow artifact
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-image
+          path: /tmp/app-image.tar
+
