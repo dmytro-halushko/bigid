@@ -1,5 +1,27 @@
+import base64
 from unittest.mock import patch
 from app import start_time, readiness_time
+
+
+def get_auth_headers():
+    """
+    Reads credentials from users.txt, encodes them,
+    and returns the Basic Auth header.
+    """
+    with open('users.txt', 'r') as f:
+        line = f.readline().strip()
+        # Encode the credentials for the Authorization header
+        encoded_credentials = base64.b64encode(line.encode()).decode('utf-8')
+        return {'Authorization': f'Basic {encoded_credentials}'}
+
+
+def test_get_ip_unauthorized(client):
+    """
+    Test the '/' route fails with 401 Unauthorized
+    when no credentials are provided.
+    """
+    response = client.get('/')
+    assert response.status_code == 401
 
 
 def test_get_ip(client):
@@ -7,7 +29,8 @@ def test_get_ip(client):
     Test the '/' route to ensure it returns the default remote address
     when no proxy headers are present.
     """
-    response = client.get('/')
+    headers = get_auth_headers()
+    response = client.get('/', headers=headers)
     assert response.status_code == 200
     assert response.is_json
     assert response.get_json() == {'ip': '127.0.0.1'}
@@ -18,9 +41,10 @@ def test_get_ip_with_x_forwarded_for(client):
     Test the '/' route to ensure it correctly parses the IP address
     from the 'X-Forwarded-For' header.
     """
-    headers = {
+    headers = get_auth_headers()
+    headers.update({
         'X-Forwarded-For': '192.168.1.1, 10.0.0.1'
-    }
+    })
     response = client.get('/', headers=headers)
     assert response.status_code == 200
     assert response.is_json
@@ -44,7 +68,7 @@ def test_health_check(client):
 def test_readiness_probe_flow(client):
     with patch('time.time', return_value=start_time + readiness_time - 0.1):
         response_not_ready = client.get('/ready')
-        assert response_not_ready.status_code == 200
+        assert response_not_ready.status_code == 503
         assert response_not_ready.is_json
         assert response_not_ready.get_json() == {'status': 'not_ready'}
 
