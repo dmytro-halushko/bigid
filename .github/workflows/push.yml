@@ -13,7 +13,7 @@ jobs:
       pull-requests: write
     uses: ./.github/workflows/lint-and-test.yml
     with:
-      python-version: "3.12"
+      python_version: "3.12"
     secrets:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
 
