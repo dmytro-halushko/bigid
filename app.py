@@ -7,12 +7,12 @@ app = Flask(__name__)
 
 USERS = {}
 
+
 def load_users_from_file(filepath="users.txt"):
     """
     Loads users and passwords from a file into the USERS dictionary.
     The file should have one 'username:password' pair per line.
     """
-    global USERS
     try:
         with open(filepath, 'r') as f:
             for line in f:
@@ -23,14 +23,17 @@ def load_users_from_file(filepath="users.txt"):
                 username, password = line.split(':', 1)
                 USERS[username.strip()] = password.strip()
         if not USERS:
-            print("Warning: users.txt is empty or improperly formatted. No users were loaded.")
+            print("Warning: users.txt is empty or improperly formatted. "
+                  "No users were loaded.")
             exit(1)
     except FileNotFoundError:
-        print(f"Warning: User credentials file not found at '{filepath}'. Authentication will fail.")
+        print(f"Warning: User credentials file not found at '{filepath}'. "
+              f"Authentication will fail.")
         exit(1)
     except Exception as e:
         print(f"An error occurred while loading users: {e}")
         exit(1)
+
 
 # Load users on application startup
 load_users_from_file()
@@ -54,12 +57,14 @@ def check_auth(username, password):
     password combination is valid."""
     return username in USERS and USERS[username] == password
 
+
 def authenticate():
     """Sends a 401 response that enables basic auth"""
     return Response(
         'Could not verify your access level for that URL.\n'
         'You have to login with proper credentials', 401,
         {'WWW-Authenticate': 'Basic realm="Login Required"'})
+
 
 def auth_required(f):
     """Decorator to protect endpoints with authentication."""
@@ -70,6 +75,7 @@ def auth_required(f):
             return authenticate()
         return f(*args, **kwargs)
     return decorated
+
 
 try:
     readiness_time = int(os.environ.get('READINESS_TIME', '30'))
