@@ -34,6 +34,7 @@ jobs:
       - name: Run Python linter on push
         if: github.event_name == 'push'
         run: |
+              pip install flake8
               flake8 .
       - name: Lint Dockerfile with Hadolint
         uses: hadolint/hadolint-action@v3.1.0
