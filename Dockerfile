@@ -17,6 +17,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 # Set the default readiness time
 ENV READINESS_TIME=30
+ENV PASSWD=passwd1
 
 USER app
 EXPOSE 5000
