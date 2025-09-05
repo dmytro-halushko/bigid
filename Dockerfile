@@ -1,5 +1,5 @@
 # ---- Stage 1: Build Environment ----
-FROM python:3.12-slim-trixie AS builder
+FROM python:bookworm AS builder
 WORKDIR /app
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
