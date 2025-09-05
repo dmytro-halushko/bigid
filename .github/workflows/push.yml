@@ -1,0 +1,35 @@
+name: test-build-deploy
+
+on:
+  push:
+    branches: [ "master" ]
+
+env:
+  IMAGE_NAME: "${{ secrets.DOCKERHUB_USERNAME }}/bigid-dmyh"
+
+jobs:
+  lint_and_test:
+    name: Lint and Test
+    uses: ./.github/workflows/build-and-push.yml
+    with:
+      python-version: "3.12"
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+
+
+  build_push:
+    name: Build, Push, Deploy
+    runs-on: ubuntu-latest
+      # Log in to Docker Hub using stored secrets
+      - name: Check out source repository
+        uses: actions/checkout@v3
+      - name: Build an image from Dockerfile
+        run: docker build -t ${{ env.IMAGE_NAME }}:${{ github.sha }} .
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      # Push the loaded image to Docker Hub
+      - name: Push to Docker Hub
+        run: docker push ${{ env.IMAGE_NAME }}:${{ github.sha }}
