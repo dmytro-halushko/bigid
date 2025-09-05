@@ -15,8 +15,6 @@ COPY app.py .
 RUN chown -R app:app /home/app
 ENV PATH="/opt/venv/bin:$PATH"
 
-FROM ubuntu:18.04
-
 # Set the default readiness time
 ENV READINESS_TIME=30
 ENV DB_PASSWORD="insecure_password"
