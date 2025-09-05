@@ -10,7 +10,6 @@ jobs:
   lint_and_test:
     permissions:
       pull-requests: write
-    name: Lint and Test
     uses: ./.github/workflows/lint-and-test.yml
     with:
       python_version: "3.12"
