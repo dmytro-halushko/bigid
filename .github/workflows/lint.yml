@@ -31,3 +31,16 @@ jobs:
           pip install -r requirements.txt
       - name: Run tests with pytest
         run: pytest
+      - name: Build an image from Dockerfile
+        run: docker build -t app:${{ github.sha }} .
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: 'app:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: false
+          scanners: 'vuln,secret'
+          vuln-type: 'os,library'
+          #severity: 'MEDIUM,CRITICAL,HIGH'
+          severity: 'CRITICAL,HIGH'
