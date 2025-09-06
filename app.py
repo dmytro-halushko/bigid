@@ -7,8 +7,10 @@ app = Flask(__name__)
 
 USERS = {}
 
+users_file = os.environ.get('USERS_FILE', 'users.txt')
 
-def load_users_from_file(filepath="users.txt"):
+
+def load_users_from_file(filepath=users_file):
     """
     Loads users and passwords from a file into the USERS dictionary.
     The file should have one 'username:password' pair per line.
