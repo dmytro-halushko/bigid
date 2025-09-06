@@ -65,6 +65,16 @@ jobs:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
         with:
           command: helm upgrade --install ${{ env.APP_NAME }} ./charts/ -f ./charts/values.yaml --set image.tag=${{ github.sha }} --namespace ${{ env.ENV }} --wait
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: v1.32.0  # or your preferred version
+      - name: Decode Kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG_BASE64 }}" | base64 --decode > $HOME/.kube/config
+      - name: Verify cluster connectivity
+        run: kubectl get po -n ${{ env.ENV }}
       - name: Port-forward and check
         run: |
           kubectl port-forward svc/${{ env.APP_NAME }}-bigid-dmyh-app 5000:5000 -n ${{ env.ENV }}&
