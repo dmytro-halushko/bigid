@@ -2,11 +2,11 @@ replicaCount: 1
 
 image:
   repository: kinzeasy/bigid-dmyh
-  tag: "6bb619dba1dbc1a8c949ed4e32f2102293f0788d" # Overwritten by helm command if run from Github actions
+  tag: "0c37a9c3cb526a9dda271b07e09d8150a9f8c19e" # Overwritten by helm command if run from Github actions
   pullPolicy: IfNotPresent
 
 service:
-  type: ClusterIP
+  type: NodePort
   port: 5000
 
 ingress:
@@ -42,7 +42,7 @@ probes:
     path: /ready
     port: http
     initialDelaySeconds: 5
-    periodSeconds: 10
+    periodSeconds: 15
     timeoutSeconds: 5
     failureThreshold: 3
   startup:
@@ -65,4 +65,4 @@ env:
     - name: "USERS_FILE"
       value: "/etc/secret/users.txt"
     - name: "READINESS_TIME"
-      value: "30"
+      value: 30

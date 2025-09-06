@@ -17,9 +17,9 @@ jobs:
     secrets:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
 
-  build_push:
+  build_and_push:
     needs: lint_and_test
-    name: Build, Push, Deploy
+    name: Build and Push
     runs-on: ubuntu-latest
     steps:
       # Log in to Docker Hub using stored secrets
@@ -35,3 +35,24 @@ jobs:
       # Push the loaded image to Docker Hub
       - name: Push to Docker Hub
         run: docker push ${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+  deploy:
+    needs: build_and_push
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v3
+      - name: AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: helm deploy
+        uses: koslibpro/helm-eks-action@master
+        env:
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+        with:
+          command: helm upgrade --install dmyh-public-ip ./charts/ -f ./charts/values.yaml --set image.tag=${{ github.sha }} --wait
