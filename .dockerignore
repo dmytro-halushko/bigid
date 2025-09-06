@@ -5,6 +5,7 @@ Dockerfile
 # Git files
 .git
 .gitignore
+.github
 
 # Python virtual environment
 venv
@@ -17,8 +18,8 @@ pycache/
 *.pyo
 *.pyd
 
-# Instance folder (for Flask)
-instance/
+# helm folder
+charts/
 
 # IDE and editor directories
 .vscode/
