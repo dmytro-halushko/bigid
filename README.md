@@ -125,6 +125,12 @@ Automated linting, testing, building, and deployment.
    - Performs health check via `curl`
    - Sends Telegram notification with deployment status
 
+
+Notifications example:
+<p align="center">
+  <img src="./assets/tg_notification.png" alt="Telegram notifications exmaple" width="400">
+</p>
+
 ---
 
 ## How to Run Locally
@@ -209,12 +215,12 @@ Finally, find the service's port and access the application in your browser.
 
 1.  **Get Service Information**: Use `kubectl` to find the `NodePort` assigned to the service.
     ```bash
-    kubectl get service bigid-dmyh-app -n staging
+    kubectl get service dmyh-public-ip-bigid-dmyh-app -n staging
     ```
     The output will look similar to this. Note the port number next to `5000:`.
     ```
-    NAME             TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
-    bigid-dmyh-app   NodePort   10.106.53.125   <none>        5000:31118/TCP   2m
+    NAME                            TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+    dmyh-public-ip-bigid-dmyh-app   NodePort   10.106.53.125   <none>        5000:31118/TCP   2m
     ```
     In this example, the `NodePort` is `31118`.
 
