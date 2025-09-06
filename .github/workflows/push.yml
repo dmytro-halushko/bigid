@@ -24,17 +24,18 @@ jobs:
     name: Build and Push
     runs-on: ubuntu-latest
     steps:
-      # Log in to Docker Hub using stored secrets
       - name: Check out source repository
         uses: actions/checkout@v3
+
       - name: Build an image from Dockerfile
         run: docker build -t ${{ env.IMAGE_NAME }}:${{ github.sha }} .
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      # Push the loaded image to Docker Hub
+
       - name: Push to Docker Hub
         run: docker push ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
@@ -45,13 +46,16 @@ jobs:
     steps:
       - name: Check out source repository
         uses: actions/checkout@v3
+
       - name: Set up Helm
         uses: azure/setup-helm@v4
         with:
           version: v3.15.2
+
       - name: Lint Helm chart
         run: |
           helm lint ./charts/
+
       - name: AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -65,16 +69,20 @@ jobs:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
         with:
           command: helm upgrade --install ${{ env.APP_NAME }} ./charts/ -f ./charts/values.yaml --set image.tag=${{ github.sha }} --namespace ${{ env.ENV }} --wait
+
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
         with:
           version: v1.32.0
+
       - name: Decode Kubeconfig
         run: |
           mkdir -p $HOME/.kube
           echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > $HOME/.kube/config
+
       - name: Verify cluster connectivity
         run: kubectl get po -n ${{ env.ENV }}п
+
       - name: Port-forward and check
         run: |
           kubectl port-forward svc/${{ env.APP_NAME }}-bigid-dmyh-app 5000:5000 -n ${{ env.ENV }}&
@@ -84,6 +92,7 @@ jobs:
           echo "Endpoint response:"
           echo "$RESPONSE"
           echo "HEALTH_RESPONSE=$RESPONSE" >> $GITHUB_ENV
+
       - name: Notify in Telegram
         if: always()
         run: |

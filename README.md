@@ -131,15 +131,22 @@ Notifications example:
   <img src="./assets/tg_notification.png" alt="Telegram notifications exmaple" width="400">
 </p>
 
----
 
+---
 ## How to Run Locally
 
 This guide will walk you through deploying the application to a local Kubernetes cluster using Minikube.
 
+### 1. Clone the repo
+
+First, you need to clone the repository:
+```bash
+git clone git@github.com:dmytro-halushko/bigid.git
+```
+
 ### 1. Install Prerequisites
 
-First, you need to install the necessary tools to create a local Kubernetes cluster and manage the application.
+Now, you need to install the necessary tools to create a local Kubernetes cluster and manage the application.
 
 * **Minikube**: A tool that runs a single-node Kubernetes cluster on your personal computer.
     * [Installation Guide](https://minikube.sigs.k8s.io/docs/start/)
@@ -204,7 +211,7 @@ Now you'll configure the Helm chart with the correct image tag and deploy it.
 
 3.  **Deploy with Helm**: From the root of the project directory, run the Helm install command. The `--install` flag will install the chart if it's not present, and `--upgrade` will update it if it is.
     ```bash
-    helm upgrade --install bigid-dmyh-app ./charts/bigid-dmyh-app --namespace staging
+    helm upgrade --install bigid-dmyh-app ./charts --values=./charts/values.yaml --namespace staging
     ```
 
 ---
@@ -213,23 +220,26 @@ Now you'll configure the Helm chart with the correct image tag and deploy it.
 
 Finally, find the service's port and access the application in your browser.
 
-1.  **Get Service Information**: Use `kubectl` to find the `NodePort` assigned to the service.
+1.  **Get Service Information**: Use `kubectl` to find the `Service` assigned to the application.
     ```bash
-    kubectl get service dmyh-public-ip-bigid-dmyh-app -n staging
+    kubectl get svc -n staging
     ```
     The output will look similar to this. Note the port number next to `5000:`.
     ```
-    NAME                            TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
-    dmyh-public-ip-bigid-dmyh-app   NodePort   10.106.53.125   <none>        5000:31118/TCP   2m
+    NAME               TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+    bigid-dmyh-app   NodePort   10.106.53.125   <none>        5000:31118/TCP   2m
     ```
-    In this example, the `NodePort` is `31118`.
 
-2.  **Get Minikube IP**: Find the IP address of your Minikube cluster.
+2.  **Get Minikube link**: Run service tunnel of your Minikube cluster.
     ```bash
-    minikube ip
+    minikube service bigid-dmyh-app -n staging --url
+    ```
+    The output will look similar to this.
+    ```
+    http://127.0.0.1:33257
     ```
 
-3.  **Open in Browser**: Combine the Minikube IP and the NodePort to access the application. Using the examples above, the URL would be `http://<minikube-ip>:31118`.
-    * **Main Endpoint**: `http://<minikube-ip>:<NodePort>/` (will prompt for the username and password from your `users.txt`).
-    * **Health Endpoint**: `http://<minikube-ip>:<NodePort>/health`
-    * **Readiness Endpoint**: `http://<minikube-ip>:<NodePort>/ready`
+3.  **Open in Browser**: Copy the link and paste it into your browser to access the application. Using the examples above, the URL would be `http://127.0.0.1:33257`.
+    * **Main Endpoint**: `http://127.0.0.1:33257/` (will prompt for the username and password from your `users.txt`).
+    * **Health Endpoint**: `http://127.0.0.1:33257/health`
+    * **Readiness Endpoint**: `http://127.0.0.1:33257/ready`

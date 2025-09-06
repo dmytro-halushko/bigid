@@ -21,6 +21,9 @@ pycache/
 # helm folder
 charts/
 
+#Readme assets
+assets/
+
 # IDE and editor directories
 .vscode/
 .idea/

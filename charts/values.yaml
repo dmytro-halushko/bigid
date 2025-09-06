@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: kinzeasy/bigid-dmyh
-  tag: "0c37a9c3cb526a9dda271b07e09d8150a9f8c19e" # Overwritten by helm command if run from Github actions
+  tag: "646ab19bb3e9d8aa453b8dd047d17df45741fb5d" # Overwritten by helm command if run from Github actions
   pullPolicy: IfNotPresent
 
 service:
