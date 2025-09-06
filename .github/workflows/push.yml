@@ -80,7 +80,7 @@ jobs:
           kubectl port-forward svc/${{ env.APP_NAME }}-bigid-dmyh-app 5000:5000 -n ${{ env.ENV }}&
           sleep 5
           curl -f http://localhost:5000/health
-          RESPONSE=$(curl -s -w "\nHTTP_CODE:%{http_code}" http://localhost:5000/health)
+          RESPONSE=$(curl -s http://localhost:5000/health)
           echo "Endpoint response:"
           echo "$RESPONSE"
           echo "HEALTH_RESPONSE=$RESPONSE" >> $GITHUB_ENV
