@@ -14,5 +14,5 @@ kubectl create namespace staging
 
 create secret in Kubernetes:
 
-kubectl create secret generic bigid-dmyh-app-users --from-file=users.txt -n staging
+kubectl create secret generic admin-user-secret --from-file=users.txt -n staging
 
