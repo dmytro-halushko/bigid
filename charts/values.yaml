@@ -1,0 +1,68 @@
+replicaCount: 1
+
+image:
+  repository: kinzeasy/bigid-dmyh
+  tag: "6bb619dba1dbc1a8c949ed4e32f2102293f0788d" # Overwritten by helm command if run from Github actions
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 5000
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "500m"
+    memory: "256Mi"
+
+probes:
+  liveness:
+    enabled: true
+    path: /health
+    port: http
+    initialDelaySeconds: 15
+    periodSeconds: 20
+    timeoutSeconds: 5
+    failureThreshold: 2
+  readiness:
+    enabled: true
+    path: /ready
+    port: http
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  startup:
+    enabled: false
+    path: /ready
+    port: http
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+
+secret:
+  enabled: true
+  name: admin-user-secret
+  mountPath: /etc/secret
+
+env:
+  enabled: true
+  envs:
+    - name: "USERS_FILE"
+      value: "/etc/secret/users.txt"
+    - name: "READINESS_TIME"
+      value: "30"
