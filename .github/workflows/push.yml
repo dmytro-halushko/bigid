@@ -7,6 +7,7 @@ on:
 env:
   IMAGE_NAME: "${{ secrets.DOCKERHUB_USERNAME }}/bigid-dmyh"
   APP_NAME: "dmyh-public-ip"
+  ENV: "staging"
 
 jobs:
   lint_and_test:
@@ -63,10 +64,10 @@ jobs:
         env:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
         with:
-          command: helm upgrade --install ${{ env.APP_NAME }} ./charts/ -f ./charts/values.yaml --set image.tag=${{ github.sha }} --namespace staging --wait
+          command: helm upgrade --install ${{ env.APP_NAME }} ./charts/ -f ./charts/values.yaml --set image.tag=${{ github.sha }} --namespace ${{ env.ENV }} --wait
       - name: Port-forward and check
         run: |
-          kubectl port-forward svc/${{ env.APP_NAME }} 5000:5000 &
+          kubectl port-forward svc/${{ env.APP_NAME }} 5000:5000 -n ${{ env.ENV }}&
           sleep 5
           curl -f http://localhost:5000/health
           RESPONSE=$(curl -s -w "\nHTTP_CODE:%{http_code}" http://localhost:5000/health)
@@ -82,4 +83,4 @@ jobs:
 
           curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
             -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-            -d text="${STATUS}: for ${{ env.APP_NAME }} in namespace staging (commit ${{ github.sha }})\n Health check result: $RESPONSE"
+            -d text="${STATUS}: for ${{ env.APP_NAME }} in namespace ${{ env.ENV }} (commit ${{ github.sha }})\n Health check result: $RESPONSE"
